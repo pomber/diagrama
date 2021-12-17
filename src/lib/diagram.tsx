@@ -25,11 +25,13 @@ export function Diagram({ data }: DiagramProps) {
 }
 
 function Tree({ node }: { node: RenderNode }) {
+  const truncate = 1 + node.width / 10;
   return (
     <g>
       <rect x={node.x} y={node.y} width={node.width} height={node.height} />
       <text x={node.x + 10} y={node.y + 20} fill="black">
-        {node.name}
+        <title>{node.name}</title>
+        {node.name.slice(0, truncate)}
       </text>
       {node.children.map((child) => (
         <Tree key={child.id} node={child} />
