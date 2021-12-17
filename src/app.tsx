@@ -1,10 +1,14 @@
 import React from "react";
 import { Diagram, InputNode } from "./lib/diagram";
 import { innerSlider as input } from "./data";
+import LZString from "lz-string";
 
 function App() {
   const [value, setValue] = React.useState(JSON.stringify(input, null, 2));
-  const [data, setData] = React.useState<InputNode | null>(null);
+  const [_, setData] = React.useState<string | null>(null);
+
+  const hash = document.location.hash.slice(1);
+  const data = hash ? decode(hash) : null;
   return (
     <main>
       {data ? (
@@ -16,11 +20,26 @@ function App() {
             onChange={(e) => setValue(e.target.value)}
             style={{ display: "block", width: 400, height: 400 }}
           />
-          <button onClick={() => setData(JSON.parse(value))}>Render</button>
+          <button
+            onClick={() => {
+              window.location.hash = "#" + encode(value);
+              setData(value);
+            }}
+          >
+            Render
+          </button>
         </div>
       )}
     </main>
   );
+}
+
+function encode(data: string) {
+  return LZString.compressToEncodedURIComponent(data);
+}
+
+function decode(hash: string) {
+  return JSON.parse(LZString.decompressFromEncodedURIComponent(hash)!);
 }
 
 export default App;
