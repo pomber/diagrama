@@ -2,5 +2,5 @@ Run
 
 ```bash
 $ yarn
-$ yarn start
+$ yarn start --url=http://localhost:3000
 ```

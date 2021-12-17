@@ -2,7 +2,7 @@
   "scripts": {
     "chrome": "node ./chrome/test",
     "dev": "vite",
-    "start": "run-p chrome dev",
+    "start": "run-p dev \"chrome -- {1}\" --",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
