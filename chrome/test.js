@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-'use strict';
+"use strict";
 
-const chromeLaunch = require('chrome-launch');
-const {resolve} = require('path');
-const {argv} = require('yargs');
+const chromeLaunch = require("chrome-launch");
+const { resolve } = require("path");
+const { argv } = require("yargs");
 
-const EXTENSION_PATH = resolve('./chrome/build/unpacked');
-const START_URL = argv.url || 'https://reactjs.org/';
+const EXTENSION_PATH = resolve("./chrome/build/unpacked");
+const START_URL = argv.url || "https://github.com/pomber/panorama";
 
 chromeLaunch(START_URL, {
   args: [
@@ -15,9 +15,9 @@ chromeLaunch(START_URL, {
     `--load-extension=${EXTENSION_PATH}`,
 
     // Automatically open DevTools window
-    '--auto-open-devtools-for-tabs',
+    // "--auto-open-devtools-for-tabs",
 
     // Remembers previous session settings (e.g. DevTools size/position)
-    '--user-data-dir=./.tempUserDataDir',
+    "--user-data-dir=./.tempUserDataDir",
   ],
 });

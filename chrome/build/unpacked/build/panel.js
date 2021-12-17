@@ -81,19 +81,29 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./src/panel.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = 200);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/panel.js":
-/*!**********************!*\
-  !*** ./src/panel.js ***!
-  \**********************/
-/*! no static exports found */
+/***/ 200:
 /***/ (function(module, exports) {
 
-eval("// Portal target container.\nwindow.container = document.getElementById('container');\nlet hasInjectedStyles = false; // DevTools styles are injected into the top-level document head (where the main React app is rendered).\n// This method copies those styles to the child window where each panel (e.g. Elements, Profiler) is portaled.\n\nwindow.injectStyles = getLinkTags => {\n  if (!hasInjectedStyles) {\n    hasInjectedStyles = true;\n    const linkTags = getLinkTags(); // eslint-disable-next-line no-for-of-loops/no-for-of-loops\n\n    for (const linkTag of linkTags) {\n      document.head.appendChild(linkTag);\n    }\n  }\n};//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi9zcmMvcGFuZWwuanMuanMiLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9zcmMvcGFuZWwuanM/MjIxMSJdLCJzb3VyY2VzQ29udGVudCI6WyIvLyBQb3J0YWwgdGFyZ2V0IGNvbnRhaW5lci5cbndpbmRvdy5jb250YWluZXIgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnY29udGFpbmVyJyk7XG5cbmxldCBoYXNJbmplY3RlZFN0eWxlcyA9IGZhbHNlO1xuXG4vLyBEZXZUb29scyBzdHlsZXMgYXJlIGluamVjdGVkIGludG8gdGhlIHRvcC1sZXZlbCBkb2N1bWVudCBoZWFkICh3aGVyZSB0aGUgbWFpbiBSZWFjdCBhcHAgaXMgcmVuZGVyZWQpLlxuLy8gVGhpcyBtZXRob2QgY29waWVzIHRob3NlIHN0eWxlcyB0byB0aGUgY2hpbGQgd2luZG93IHdoZXJlIGVhY2ggcGFuZWwgKGUuZy4gRWxlbWVudHMsIFByb2ZpbGVyKSBpcyBwb3J0YWxlZC5cbndpbmRvdy5pbmplY3RTdHlsZXMgPSBnZXRMaW5rVGFncyA9PiB7XG4gIGlmICghaGFzSW5qZWN0ZWRTdHlsZXMpIHtcbiAgICBoYXNJbmplY3RlZFN0eWxlcyA9IHRydWU7XG5cbiAgICBjb25zdCBsaW5rVGFncyA9IGdldExpbmtUYWdzKCk7XG5cbiAgICAvLyBlc2xpbnQtZGlzYWJsZS1uZXh0LWxpbmUgbm8tZm9yLW9mLWxvb3BzL25vLWZvci1vZi1sb29wc1xuICAgIGZvciAoY29uc3QgbGlua1RhZyBvZiBsaW5rVGFncykge1xuICAgICAgZG9jdW1lbnQuaGVhZC5hcHBlbmRDaGlsZChsaW5rVGFnKTtcbiAgICB9XG4gIH1cbn07XG4iXSwibWFwcGluZ3MiOiJBQUFBO0FBQ0E7QUFFQTtBQUdBO0FBQ0E7QUFBQTtBQUNBO0FBQ0E7QUFFQTtBQUNBO0FBRUE7QUFDQTtBQUNBO0FBQ0E7QUFDQSIsInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///./src/panel.js\n");
+// Portal target container.
+window.container = document.getElementById('container');
+let hasInjectedStyles = false; // DevTools styles are injected into the top-level document head (where the main React app is rendered).
+// This method copies those styles to the child window where each panel (e.g. Elements, Profiler) is portaled.
+
+window.injectStyles = getLinkTags => {
+  if (!hasInjectedStyles) {
+    hasInjectedStyles = true;
+    const linkTags = getLinkTags(); // eslint-disable-next-line no-for-of-loops/no-for-of-loops
+
+    for (const linkTag of linkTags) {
+      document.head.appendChild(linkTag);
+    }
+  }
+};
 
 /***/ })
 
