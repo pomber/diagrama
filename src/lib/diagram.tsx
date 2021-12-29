@@ -1,6 +1,6 @@
 import React from "react";
 import { InputNode, RenderNode, buildTree } from "./tree";
-import { motion, MotionConfig } from "framer-motion";
+import { motion, MotionConfig, useMotionValue } from "framer-motion";
 
 type DiagramProps = {
   data: InputNode;
@@ -18,6 +18,8 @@ export function Diagram({ data }: DiagramProps) {
     console.log("collapse", id);
     setCollapsed((prev) => (prev.includes(id) ? prev : [...prev, id]));
   }
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
 
   return (
     <MotionConfig
@@ -28,16 +30,28 @@ export function Diagram({ data }: DiagramProps) {
         mass: 0.2,
       }}
     >
-      <svg
+      <motion.svg
         style={{
           fontFamily: "monospace",
           height: "100vh",
           width: "100vw",
           position: "relative",
         }}
+        onWheel={(e) => {
+          x.set(x.get() - e.deltaX);
+          y.set(y.get() - e.deltaY);
+          console.log(e);
+        }}
       >
-        <Tree node={tree} onCollapse={collapse} />
-      </svg>
+        <motion.svg
+          x={x}
+          y={y}
+          style={{ position: "relative" }}
+          animate={{ width, height }}
+        >
+          <Tree node={tree} onCollapse={collapse} />
+        </motion.svg>
+      </motion.svg>
     </MotionConfig>
   );
 }
@@ -59,14 +73,8 @@ function Tree({
   return (
     <>
       <motion.rect
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-        style={{
-          // position: "absolute",
-          color: isHostNode ? "#228" : "#000",
-          // outline: "1px solid currentColor",
-          borderRadius: "2px",
-        }}
+        // onMouseEnter={() => setHover(true)}
+        // onMouseLeave={() => setHover(false)}
         fill={"transparent"}
         stroke={isHostNode ? "#228" : "#000"}
         animate={{
@@ -75,13 +83,18 @@ function Tree({
           height: node.height,
           width: node.width,
           // backgroundColor: hover ? "#222" : "#fafafa",
-          color: hover ? "#fafafa" : "#228",
+          fill: hover ? "#aaa8" : "#fff8",
         }}
         initial={false}
         onClick={() => onCollapse(node.id)}
-      ></motion.rect>
+        whileHover={{
+          fill: "#aaa8",
+        }}
+      />
 
       <motion.text
+        // onMouseEnter={() => setHover(true)}
+        // onMouseLeave={() => setHover(false)}
         animate={{
           x: node.x + 10,
           y: node.y + 20,
