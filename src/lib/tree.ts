@@ -4,12 +4,15 @@ import { getVertical2 } from "./vertical";
 
 export type { InputNode, RenderNode };
 
-export function buildTree(data: InputNode): {
+export function buildTree(
+  data: InputNode,
+  collapsed: string[]
+): {
   tree: RenderNode;
   height: number;
   width: number;
 } {
-  const safeInput = sanitize(data);
+  const safeInput = collapseTree(sanitize(data), collapsed);
 
   const { totalHeight, vertical } = getVertical2(safeInput);
 
@@ -22,6 +25,15 @@ export function buildTree(data: InputNode): {
     tree: layout(safeInput, vertical, horizontal),
     height: totalHeight,
     width: horizontal[safeInput.id].width + 2 * GAP,
+  };
+}
+
+function collapseTree(tree: SafeInputNode, collapsed: string[]): SafeInputNode {
+  return {
+    ...tree,
+    children: tree.children
+      .filter((child) => !collapsed.includes(child.id))
+      .map((child) => collapseTree(child, collapsed)),
   };
 }
 

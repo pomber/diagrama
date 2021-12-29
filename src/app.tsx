@@ -1,6 +1,6 @@
 import React from "react";
 import { Diagram, InputNode } from "./lib/diagram";
-import { innerSlider as input } from "./data";
+import { disney as input } from "./data";
 import LZString from "lz-string";
 
 function App() {
