@@ -18,8 +18,8 @@ export function Diagram({ data }: DiagramProps) {
     console.log("collapse", id);
     setCollapsed((prev) => (prev.includes(id) ? prev : [...prev, id]));
   }
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
+  const x = useMotionValue(10);
+  const y = useMotionValue(10);
 
   return (
     <MotionConfig
@@ -68,7 +68,7 @@ export function Diagram({ data }: DiagramProps) {
           top: 0,
           height: "100vh",
           boxShadow:
-            "0px 0px 16px -1px rgba(0, 0, 0, 0.05), 0px 0px 16px -8px rgba(0, 0, 0, 0.05), 0px 0px 16px -12px rgba(0, 0, 0, 0.12), 0px 0px 2px 0px rgba(0, 0, 0, 0.08);",
+            "0px 0px 16px -1px rgba(0, 0, 0, 0.05), 0px 0px 16px -8px rgba(0, 0, 0, 0.05), 0px 0px 16px -12px rgba(0, 0, 0, 0.12), 0px 0px 2px 0px rgba(0, 0, 0, 0.08)",
         }}
       ></div>
     </MotionConfig>
