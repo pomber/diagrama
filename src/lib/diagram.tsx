@@ -36,11 +36,18 @@ export function Diagram({ data }: DiagramProps) {
           height: "100vh",
           width: "100vw",
           position: "relative",
+          touchAction: "none",
+          userSelect: "none",
         }}
         onWheel={(e) => {
-          x.set(x.get() - e.deltaX);
-          y.set(y.get() - e.deltaY);
-          console.log(e);
+          const deltaX = e.shiftKey ? e.deltaY : e.deltaX;
+          const deltaY = e.shiftKey ? e.deltaX : e.deltaY;
+          x.set(x.get() - deltaX);
+          y.set(y.get() - deltaY);
+        }}
+        onPan={(e, pointInfo) => {
+          x.set(x.get() + pointInfo.delta.x);
+          y.set(y.get() + pointInfo.delta.y);
         }}
       >
         <motion.svg
@@ -52,6 +59,18 @@ export function Diagram({ data }: DiagramProps) {
           <Tree node={tree} onCollapse={collapse} />
         </motion.svg>
       </motion.svg>
+      <div
+        style={{
+          background: "#fafafa",
+          position: "fixed",
+          width: "400px",
+          right: 0,
+          top: 0,
+          height: "100vh",
+          boxShadow:
+            "0px 0px 16px -1px rgba(0, 0, 0, 0.05), 0px 0px 16px -8px rgba(0, 0, 0, 0.05), 0px 0px 16px -12px rgba(0, 0, 0, 0.12), 0px 0px 2px 0px rgba(0, 0, 0, 0.08);",
+        }}
+      ></div>
     </MotionConfig>
   );
 }
@@ -68,33 +87,27 @@ function Tree({
   const firstChar = node.name ? node.name[0] : "";
   const isHostNode = firstChar === firstChar.toLocaleLowerCase();
 
-  const [hover, setHover] = React.useState(false);
-
   return (
     <>
       <motion.rect
-        // onMouseEnter={() => setHover(true)}
-        // onMouseLeave={() => setHover(false)}
-        fill={"transparent"}
-        stroke={isHostNode ? "#228" : "#000"}
+        fill={"#fff"}
+        stroke={"#777"}
         animate={{
           x: node.x,
           y: node.y,
           height: node.height,
           width: node.width,
-          // backgroundColor: hover ? "#222" : "#fafafa",
-          fill: hover ? "#aaa8" : "#fff8",
         }}
         initial={false}
         onClick={() => onCollapse(node.id)}
         whileHover={{
-          fill: "#aaa8",
+          // fill: "#aaa8",
+          stroke: "blue",
         }}
+        rx="2"
       />
 
       <motion.text
-        // onMouseEnter={() => setHover(true)}
-        // onMouseLeave={() => setHover(false)}
         animate={{
           x: node.x + 10,
           y: node.y + 20,
