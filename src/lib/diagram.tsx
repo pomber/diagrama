@@ -1,10 +1,16 @@
 import React from "react";
 import { InputNode, RenderNode, buildTree } from "./tree";
 import { motion, MotionConfig, useMotionValue } from "framer-motion";
+import { atom, RecoilRoot, useRecoilState } from "recoil";
 
 type DiagramProps = {
   data: InputNode;
 };
+
+const selectedNodeState = atom<string | null>({
+  key: "selectedNode",
+  default: null,
+});
 
 export type { InputNode };
 
@@ -13,6 +19,7 @@ export function Diagram({ data }: DiagramProps) {
   const { tree, height, width } = React.useMemo(() => {
     return buildTree(data, collapsed);
   }, [data, collapsed]);
+  const [selectedNode, setSelectedNode] = useRecoilState(selectedNodeState);
 
   function collapse(id: string) {
     console.log("collapse", id);
@@ -70,7 +77,12 @@ export function Diagram({ data }: DiagramProps) {
           boxShadow:
             "0px 0px 16px -1px rgba(0, 0, 0, 0.05), 0px 0px 16px -8px rgba(0, 0, 0, 0.05), 0px 0px 16px -12px rgba(0, 0, 0, 0.12), 0px 0px 2px 0px rgba(0, 0, 0, 0.08)",
         }}
-      ></div>
+      >
+        {selectedNode}
+        <button onClick={() => selectedNode != null && collapse(selectedNode)}>
+          Collapse
+        </button>
+      </div>
     </MotionConfig>
   );
 }
@@ -86,11 +98,12 @@ function Tree({
   const truncatedName = node.name && node.name.slice(0, truncate);
   const firstChar = node.name ? node.name[0] : "";
   const isHostNode = firstChar === firstChar.toLocaleLowerCase();
+  const [selectedNode, setSelectedNode] = useRecoilState(selectedNodeState);
 
   return (
     <>
       <motion.rect
-        fill={"#fff"}
+        fill={selectedNode === node.id ? "#eee" : "#fff"}
         stroke={"#777"}
         animate={{
           x: node.x,
@@ -99,7 +112,7 @@ function Tree({
           width: node.width,
         }}
         initial={false}
-        onClick={() => onCollapse(node.id)}
+        onClick={() => setSelectedNode(node.id)}
         whileHover={{
           // fill: "#aaa8",
           stroke: "blue",

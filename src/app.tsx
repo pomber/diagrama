@@ -2,6 +2,7 @@ import React from "react";
 import { Diagram, InputNode } from "./lib/diagram";
 import { disney as input } from "./data";
 import LZString from "lz-string";
+import { RecoilRoot } from "recoil";
 
 function App() {
   const [value, setValue] = React.useState(JSON.stringify(input, null, 2));
@@ -12,7 +13,9 @@ function App() {
   return (
     <main>
       {data ? (
-        <Diagram data={data} />
+        <RecoilRoot>
+          <Diagram data={data} />
+        </RecoilRoot>
       ) : (
         <div>
           <textarea
