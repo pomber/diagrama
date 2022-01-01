@@ -24,7 +24,7 @@ export function buildTree(
   return {
     tree: layout(safeInput, vertical, horizontal),
     height: totalHeight,
-    width: horizontal[safeInput.id].width + 2 * GAP,
+    width: horizontal[safeInput.id].width,
   };
 }
 
@@ -41,7 +41,7 @@ function getHorizontal(
   tree: SafeInputNode
 ): Record<string, { x: number; width: number }> {
   const horizontal: Record<string, { x: number; width: number }> = {};
-  getHorizontalNode(tree, horizontal, 10);
+  getHorizontalNode(tree, horizontal, 0);
   return horizontal;
 }
 

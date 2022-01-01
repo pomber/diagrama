@@ -26,7 +26,7 @@ export function getVertical2(tree: SafeInputNode): {
 } {
   const { node: verticalTree } = toVerticalNode(tree);
 
-  console.log({ verticalTree });
+  // console.log({ verticalTree });
   return measure(verticalTree);
 }
 
@@ -121,9 +121,9 @@ function measure(tree: VerticalNode): {
   }
 
   measureHeights(tree);
-  measureYs(tree, GAP);
-  console.log(vertical);
-  const totalHeight = heights[tree.id].externalHeight + 2 * GAP;
+  measureYs(tree, 0);
+  // console.log(vertical);
+  const totalHeight = heights[tree.id].externalHeight;
 
   return { vertical, totalHeight };
 }
