@@ -37,6 +37,7 @@ export interface LayoutNode {
   width: number;
   height: number;
   collapsed: boolean;
+  hidden: boolean;
 }
 
 export interface Layout {

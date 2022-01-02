@@ -31,9 +31,13 @@ function Screen({ structure }: { structure: StructureNode }) {
 
   const [selectedNode] = useRecoilState(selectedNodeState);
 
-  function collapse(id: string) {
-    console.log("collapse", id);
-    setCollapsed((prev) => (prev.includes(id) ? prev : [...prev, id]));
+  function toggleCollapse(id: string) {
+    console.log("toggling", id);
+    if (collapsed.includes(id)) {
+      setCollapsed(collapsed.filter((c) => c !== id));
+    } else {
+      setCollapsed([...collapsed, id]);
+    }
   }
 
   const [canvasRef, { width: cw, height: ch }] = useElementSize();
@@ -81,9 +85,11 @@ function Screen({ structure }: { structure: StructureNode }) {
               JSON.stringify(layout.nodes[selectedNode], null, 2)}
           </pre>
           <button
-            onClick={() => selectedNode != null && collapse(selectedNode)}
+            onClick={() => selectedNode != null && toggleCollapse(selectedNode)}
           >
-            Collapse
+            {selectedNode && collapsed.includes(selectedNode)
+              ? "Unfold"
+              : "Fold"}
           </button>
         </div>
       </div>
@@ -173,6 +179,10 @@ function DrawLayout({
 }
 
 function DrawNode({ node }: { node: LayoutNode }) {
+  if (node.hidden) {
+    return null;
+  }
+
   const truncate = 1 + node.width / 10;
   const truncatedName = node.name && node.name.slice(0, truncate);
   const firstChar = node.name ? node.name[0] : "";
@@ -209,6 +219,19 @@ function DrawNode({ node }: { node: LayoutNode }) {
       >
         {truncatedName}
       </motion.text>
+      {node.collapsed && (
+        <motion.text
+          animate={{
+            x: node.x + 10,
+            y: node.y + 35,
+          }}
+          fill="#222"
+          initial={false}
+          style={{ fontSize: "0.8em" }}
+        >
+          [Folded]
+        </motion.text>
+      )}
     </>
   );
 }

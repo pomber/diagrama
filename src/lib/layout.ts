@@ -22,14 +22,18 @@ export function measure(tree: StructureNode, collapsed: Set<NodeId>): Layout {
       ...node.internal.map((child) => heights[child.id].externalHeight)
     );
 
-    const internalHeight = maxInternalChildHeight + CONTENT_HEIGHT + GAP;
+    const isCollapsed = collapsed.has(node.id);
+    const innerHeight = isCollapsed ? 14 : maxInternalChildHeight;
+    const internalHeight = innerHeight + CONTENT_HEIGHT + GAP;
 
     const maxExternalChildHeight = Math.max(
       0,
       ...node.external.map((child) => heights[child.id].externalHeight)
     );
 
-    const externalHeight = internalHeight + maxExternalChildHeight + GAP;
+    const outerHeight = isCollapsed ? 0 : maxExternalChildHeight;
+
+    const externalHeight = internalHeight + outerHeight + GAP;
     heights[node.id] = {
       internalHeight,
       externalHeight,
@@ -69,7 +73,10 @@ export function measure(tree: StructureNode, collapsed: Set<NodeId>): Layout {
         ? (node.children.length + 1) * GAP
         : (node.children.length - 1) * GAP
     );
-    horizontal[node.id] = { x, width: Math.max(childrenWidth, CONTENT_WIDTH) };
+
+    const isCollapsed = collapsed.has(node.id);
+    const innerWidth = isCollapsed ? 0 : childrenWidth;
+    horizontal[node.id] = { x, width: Math.max(innerWidth, CONTENT_WIDTH) };
   }
 
   measureHeights(tree);
@@ -77,10 +84,14 @@ export function measure(tree: StructureNode, collapsed: Set<NodeId>): Layout {
   measureHorizontal(tree, 0);
 
   const layoutNodes: Layout["nodes"] = {};
-  function saveLayoutNode(node: StructureNode) {
+  function saveLayoutNode(node: StructureNode, hidden: boolean) {
     node.children.forEach((child) => {
-      saveLayoutNode(child);
+      saveLayoutNode(child, collapsed.has(node.id) || hidden);
     });
+    // node.external.forEach((child) => {
+    //   saveLayoutNode(child,  hidden);
+    // });
+
     const { x, width } = horizontal[node.id];
     const { y, height } = vertical[node.id];
     layoutNodes[node.id] = {
@@ -91,9 +102,10 @@ export function measure(tree: StructureNode, collapsed: Set<NodeId>): Layout {
       width,
       height,
       collapsed: collapsed.has(node.id),
+      hidden,
     };
   }
-  saveLayoutNode(tree);
+  saveLayoutNode(tree, false);
 
   return {
     nodes: layoutNodes,
