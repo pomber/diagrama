@@ -7,7 +7,7 @@ const { resolve } = require("path");
 const { argv } = require("yargs");
 
 const EXTENSION_PATH = resolve("./chrome/build/unpacked");
-const START_URL = argv.url || "https://github.com/pomber/panorama";
+const START_URL = argv.url || "http://localhost:3333/";
 
 chromeLaunch(START_URL, {
   args: [
