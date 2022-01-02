@@ -118,15 +118,19 @@ function DrawLayout({
   const tx = (canvasWidth - layout.width * s) / 2;
   const ty = (canvasHeight - layout.height * s) / 2;
 
-  const x = useMotionValue(tx);
-  const y = useMotionValue(ty);
-  const scale = useMotionValue(s);
+  const [camera, setCamera] = React.useState({ x: tx, y: ty, scale: s });
 
   useEffect(() => {
-    x.set(tx);
-    y.set(ty);
-    scale.set(s);
+    setCamera({ x: tx, y: ty, scale: s });
   }, [tx, ty, s]);
+
+  const layoutElements = React.useMemo(
+    () =>
+      Object.values(layout.nodes).map((node) => (
+        <DrawNode key={node.id} node={node} />
+      )),
+    [layout.nodes]
+  );
 
   return (
     <motion.svg
@@ -140,40 +144,50 @@ function DrawLayout({
       onWheel={(e) => {
         // e.preventDefault();
         if (e.ctrlKey) {
-          scale.set(Math.min(scale.get() * (e.deltaY > 0 ? 1.1 : 0.9), 1));
+          setCamera((c) => ({
+            ...c,
+            scale: Math.min(c.scale * (e.deltaY > 0 ? 1.1 : 0.9), 1),
+          }));
           return;
         }
 
         const deltaX = e.shiftKey ? e.deltaY : e.deltaX;
         const deltaY = e.shiftKey ? e.deltaX : e.deltaY;
-        x.set(x.get() - deltaX);
-        y.set(y.get() - deltaY);
+
+        setCamera((c) => ({
+          ...c,
+          x: c.x - deltaX,
+          y: c.y - deltaY,
+        }));
       }}
       onPan={(e, pointInfo) => {
-        x.set(x.get() + pointInfo.delta.x);
-        y.set(y.get() + pointInfo.delta.y);
+        const deltaX = pointInfo.delta.x;
+        const deltaY = pointInfo.delta.y;
+        setCamera((c) => ({
+          ...c,
+          x: c.x + deltaX,
+          y: c.y + deltaY,
+        }));
       }}
     >
-      <motion.svg
-        x={x}
-        y={y}
+      <motion.g
         animate={{
+          x: camera.x,
+          y: camera.y,
           width: layout.width,
           height: layout.height,
         }}
       >
         <motion.g
-          scale={scale}
           animate={{
             originX: 0,
             originY: 0,
+            scale: camera.scale,
           }}
         >
-          {Object.values(layout.nodes).map((node) => (
-            <DrawNode key={node.id} node={node} />
-          ))}
+          {layoutElements}
         </motion.g>
-      </motion.svg>
+      </motion.g>
     </motion.svg>
   );
 }
