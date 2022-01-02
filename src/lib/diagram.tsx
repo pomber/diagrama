@@ -66,7 +66,12 @@ function Screen({ structure }: { structure: StructureNode }) {
           }}
           ref={canvasRef as any}
         >
-          <DrawLayout layout={layout} canvasHeight={ch} canvasWidth={cw} />
+          <DrawLayout
+            layout={layout}
+            canvasHeight={ch}
+            canvasWidth={cw}
+            onCollapse={toggleCollapse}
+          />
         </div>
         <div
           style={{
@@ -101,10 +106,12 @@ function DrawLayout({
   layout,
   canvasWidth,
   canvasHeight,
+  onCollapse,
 }: {
   layout: Layout;
   canvasWidth: number;
   canvasHeight: number;
+  onCollapse: (id: string) => void;
 }) {
   const measured = canvasWidth > 20 && canvasHeight > 20;
   const s = measured
@@ -127,7 +134,7 @@ function DrawLayout({
   const layoutElements = React.useMemo(
     () =>
       Object.values(layout.nodes).map((node) => (
-        <DrawNode key={node.id} node={node} />
+        <DrawNode key={node.id} node={node} onDoubleClick={onCollapse} />
       )),
     [layout.nodes]
   );
@@ -192,7 +199,13 @@ function DrawLayout({
   );
 }
 
-function DrawNode({ node }: { node: LayoutNode }) {
+function DrawNode({
+  node,
+  onDoubleClick,
+}: {
+  node: LayoutNode;
+  onDoubleClick: (nodeId: string) => void;
+}) {
   if (node.hidden) {
     return null;
   }
@@ -206,7 +219,7 @@ function DrawNode({ node }: { node: LayoutNode }) {
   return (
     <>
       <motion.rect
-        fill={selectedNode === node.id ? "#eee" : "#fff"}
+        fill={selectedNode === node.id ? "#b0e7ff" : "#fff"}
         stroke={"#777"}
         animate={{
           x: node.x,
@@ -216,6 +229,7 @@ function DrawNode({ node }: { node: LayoutNode }) {
         }}
         initial={false}
         onTap={() => setSelectedNode(node.id)}
+        onDoubleClick={() => onDoubleClick(node.id)}
         // whileHover={{
         //   // fill: "#aaa8",
         //   stroke: "blue",
@@ -230,6 +244,7 @@ function DrawNode({ node }: { node: LayoutNode }) {
         }}
         fill="#222"
         initial={false}
+        style={{ pointerEvents: "none" }}
       >
         {truncatedName}
       </motion.text>
@@ -241,7 +256,7 @@ function DrawNode({ node }: { node: LayoutNode }) {
           }}
           fill="#222"
           initial={false}
-          style={{ fontSize: "0.8em" }}
+          style={{ fontSize: "0.8em", pointerEvents: "none" }}
         >
           [Folded]
         </motion.text>
