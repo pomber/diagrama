@@ -11,12 +11,37 @@ export interface SafeInputNode extends InputNode {
   children: SafeInputNode[];
 }
 
-export interface RenderNode {
-  id: string;
+export type NodeId = string;
+
+// this is the parsed input element tree
+// in a useful format, without any state
+export interface StructureNode {
+  id: NodeId;
+  name: string;
+  owner: NodeId;
+  level: number;
+  children: StructureNode[];
+  // children owned by this node
+  internal: StructureNode[];
+  // descendant trees with the same owner as this node
+  external: StructureNode[];
+}
+
+// this is the result of mixing the structure tree
+// with the state
+export interface LayoutNode {
+  id: NodeId;
   name: string;
   x: number;
   y: number;
   width: number;
   height: number;
-  children: RenderNode[];
+  collapsed: boolean;
+  hidden: boolean;
+}
+
+export interface Layout {
+  height: number;
+  width: number;
+  nodes: Record<NodeId, LayoutNode>;
 }
