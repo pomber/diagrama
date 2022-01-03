@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import { motion, MotionConfig, useMotionValue } from "framer-motion";
 import { atom, useRecoilState } from "recoil";
 import { useElementSize } from "./use-element-size";
 import { InputNode, Layout, LayoutNode, StructureNode } from "./types";
 import { buildStructure } from "./structure";
 import { measure } from "./layout";
+import { pickCollapsed } from "./smart-collapse";
 
 type DiagramProps = {
   data: InputNode;
@@ -23,7 +24,18 @@ export function Diagram({ data }: DiagramProps) {
 }
 
 function Screen({ structure }: { structure: StructureNode }) {
-  const [collapsed, setCollapsed] = React.useState<string[]>([]);
+  const [canvasRef, { width: cw, height: ch }] = useElementSize();
+
+  const canvasMeasured = cw > 0 && ch > 0;
+  const [collapsed, setCollapsed] = React.useState<string[] | null>(null);
+  useLayoutEffect(() => {
+    if (canvasMeasured) {
+      setCollapsed(pickCollapsed(structure, cw));
+    } else {
+      setCollapsed(null);
+    }
+  }, [canvasMeasured]);
+
   const layout = React.useMemo(() => {
     // console.log("measuring");
     return measure(structure, new Set(collapsed));
@@ -33,14 +45,12 @@ function Screen({ structure }: { structure: StructureNode }) {
 
   function toggleCollapse(id: string) {
     console.log("toggling", id);
-    if (collapsed.includes(id)) {
-      setCollapsed(collapsed.filter((c) => c !== id));
+    if (collapsed!.includes(id)) {
+      setCollapsed(collapsed!.filter((c) => c !== id));
     } else {
-      setCollapsed([...collapsed, id]);
+      setCollapsed([...collapsed!, id]);
     }
   }
-
-  const [canvasRef, { width: cw, height: ch }] = useElementSize();
 
   return (
     <MotionConfig
@@ -66,12 +76,14 @@ function Screen({ structure }: { structure: StructureNode }) {
           }}
           ref={canvasRef as any}
         >
-          <DrawLayout
-            layout={layout}
-            canvasHeight={ch}
-            canvasWidth={cw}
-            onCollapse={toggleCollapse}
-          />
+          {canvasMeasured && collapsed != null && (
+            <DrawLayout
+              layout={layout}
+              canvasHeight={ch}
+              canvasWidth={cw}
+              onCollapse={toggleCollapse}
+            />
+          )}
         </div>
         <div
           style={{
@@ -92,7 +104,7 @@ function Screen({ structure }: { structure: StructureNode }) {
           <button
             onClick={() => selectedNode != null && toggleCollapse(selectedNode)}
           >
-            {selectedNode && collapsed.includes(selectedNode)
+            {selectedNode && collapsed!.includes(selectedNode)
               ? "Unfold"
               : "Fold"}
           </button>
@@ -115,19 +127,22 @@ function DrawLayout({
 }) {
   const measured = canvasWidth > 20 && canvasHeight > 20;
   const s = measured
-    ? Math.min(
-        (canvasWidth - 20) / layout.width,
-        (canvasHeight - 20) / layout.height,
-        1
+    ? Math.max(
+        Math.min(
+          (canvasWidth - 20) / layout.width,
+          (canvasHeight - 20) / layout.height,
+          1
+        ),
+        0.5
       )
     : 1;
 
   const tx = (canvasWidth - layout.width * s) / 2;
-  const ty = (canvasHeight - layout.height * s) / 2;
+  const ty = Math.max((canvasHeight - layout.height * s) / 2, 10);
 
   const [camera, setCamera] = React.useState({ x: tx, y: ty, scale: s });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setCamera({ x: tx, y: ty, scale: s });
   }, [tx, ty, s]);
 
@@ -178,6 +193,7 @@ function DrawLayout({
       }}
     >
       <motion.g
+        initial={false}
         animate={{
           x: camera.x,
           y: camera.y,
@@ -186,6 +202,7 @@ function DrawLayout({
         }}
       >
         <motion.g
+          initial={false}
           animate={{
             originX: 0,
             originY: 0,
